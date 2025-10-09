@@ -125,13 +125,13 @@ VALUES
 -- Emprestimos Criados 
 INSERT INTO Emprestimo (id_aluno, id_livro, data_emprestimo, data_devolucao, status_emprestimo)
 VALUES
-(1, 2, '2025-01-01', '2024-09-15', 'Em andamento'),
-(2, 3, '2025-02-02', '2024-09-16', 'Em andamento'),
-(3, 4, '2025-03-03', '2024-09-17', 'Em andamento'),
-(4, 5, '2025-04-04', '2024-09-18', 'Em andamento'),
-(5, 6, '2025-05-05', '2024-09-19', 'Em andamento'),
-(6, 7, '2025-06-06', '2024-09-20', 'Em andamento'),
-(7, 8, '2025-07-07', '2024-09-21', 'Em andamento'),
-(8, 9, '2025-08-08', '2024-09-22', 'Em andamento'),
-(9, 10, '2025-09-09', '2024-09-23', 'Em andamento'),
-(10, 1, '2024-09-10', '2024-09-24', 'Em andamento');
+(1, 2, '2025-01-01', '2025-02-02', 'Em andamento'),
+(2, 3, '2025-02-02', '2025-03-03', 'Em andamento'),
+(3, 4, '2025-03-03', '2025-04-04', 'Em andamento'),
+(4, 5, '2025-04-04', '2025-05-05', 'Em andamento'),
+(5, 6, '2025-05-05', '2025-06-06', 'Em andamento'),
+(6, 7, '2025-06-06', '2025-07-07', 'Em andamento'),
+(7, 8, '2025-07-07', '2025-08-08', 'Em andamento'),
+(8, 9, '2025-08-08', '2025-09-09', 'Em andamento'),
+(9, 10, '2025-09-09', '2025-10-10', 'Em andamento'),
+(10, 1, '2025-09-10', '2025-11-11', 'Em andamento');
