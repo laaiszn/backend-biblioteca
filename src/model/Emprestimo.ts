@@ -72,3 +72,5 @@ class Emprestimo {
     this.status_emprestimo = status_emprestimo;
   }
 }
+
+export default Emprestimo;
