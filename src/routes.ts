@@ -1,10 +1,19 @@
-import { Router } from "express"; 
-import type { Request, Response } from "express";
+import { Router } from "express";
+import type {Request, Response} from "express";
+import LivroController from "./controller/LivroController.js";
+import AlunoController from "./controller/AlunoController.js";
+import EmprestimoController from "./controller/EmprestimoController.js";
 
-const router = Router(); 
+const router: Router = Router();
 
-router.get("/api", (req: Request, res: Response) => {
-res.status(200).json({messagem: "Olá, seja bem-vindo"});
+router.get("/api" , (req: Request, res: Response) => {
+    res.status(200).json({mensagem: "Olá, seja bem-vindo a Biblioteca!)"}))
 });
 
-export {router};
+router.get("/api/livros", LivroController.todos);
+router.post("/api/livros", LivroController.criar);
+router.get("/api/livros/:id", LivroController.livro);
+
+router.get("/api/alunos", AlunoController.todos);
+router.post("/api/alunos", AlunoController.criar);
+router.get("/api/alunos/:id", AlunoController.aluno);

@@ -1,4 +1,4 @@
--- CREATE ALUNO - TRIGGER - FUNCTION
+
 
 CREATE SEQUENCE seq_ra START 1;
 
@@ -13,7 +13,7 @@ CREATE TABLE Aluno (
     celular VARCHAR (20) NOT NULL
 );
 
--- cria o RA
+
 CREATE OR REPLACE FUNCTION gerar_ra() RETURNS TRIGGER AS $$
 BEGIN
     NEW.ra := 'AAA' || TO_CHAR(nextval('seq_ra'), 'FM0000');

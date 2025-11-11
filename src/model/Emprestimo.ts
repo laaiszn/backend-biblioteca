@@ -22,7 +22,6 @@ class Emprestimo {
     this.status_emprestimo = _status_emprestimo;
   }
 
-  // GETTERS
   public getIdEmprestimo(): number {
     return this.id_emprestimo;
   }
@@ -47,7 +46,6 @@ class Emprestimo {
     return this.status_emprestimo;
   }
 
-  // SETTERS
   public setIdEmprestimo(id_emprestimo: number): void {
     this.id_emprestimo = id_emprestimo;
   }
@@ -72,5 +70,4 @@ class Emprestimo {
     this.status_emprestimo = status_emprestimo;
   }
 }
-
 export default Emprestimo;
