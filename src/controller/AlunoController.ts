@@ -2,65 +2,86 @@ import Aluno from "../model/Aluno.js";
 import type { Request, Response } from "express";
 
 class AlunoController extends Aluno {
-  // Listar todos os alunos
+  /**
+   * Faz a chamada ao modelo para obter a lista de Alunos e devolve ao Aluno
+   *
+   * @param req Requisição do Aluno
+   * @param res Resposta do servidor
+   * @returns (200) Lista de todos os Alunos
+   * @returns (500) Erro na consulta
+   */
   static async todos(req: Request, res: Response): Promise<Response> {
     try {
-      const listaAlunos: Array<Aluno> | null = await Aluno.listarAlunos();
-      return res.status(200).json(listaAlunos);
+      const listarAluno: Array<Aluno> | null = await this.listarAlunos();
+
+      return res.status(200).json(listarAluno);
     } catch (error) {
-      console.error("Erro ao consultar alunos:", error);
+      console.error(`Erro ao consultar modelo. ${error}`);
+
       return res
         .status(500)
-        .json({ mensagem: "Não foi possível acessar a lista de alunos." });
+        .json({ mensagem: "Não foi possivel acessar a lista de Alunos." });
     }
   }
 
-  // Cadastrar novo aluno
+  static async Aluno(req: Request, res: Response): Promise<Response> {
+    try {
+      const idAluno: number = parseInt(req.params.idAluno as string);
+
+      if (isNaN(idAluno) || idAluno <= 0) {
+        return res.status(400).json({ mensagem: "ID do Aluno inválido." });
+      }
+
+      const respostaModelo: Aluno | null = await Aluno.listarAluno(idAluno);
+
+      return res.status(200).json(respostaModelo);
+    } catch (error) {
+      console.error(`Erro ao acesso o modelo. ${error}`);
+      return res
+        .status(500)
+        .json({ mensagem: "Não foi possivel recuperar o Alunos." });
+    }
+  }
   static async novo(req: Request, res: Response): Promise<Response> {
     try {
       const dadosRecebidosAluno = req.body;
-      const respostaModelo = await Aluno.cadastrarAluno(dadosRecebidosAluno);
+      const respostaModelo = await Aluno.cadastrarAluno(
+        dadosRecebidosAluno
+      );
 
       if (respostaModelo) {
         return res
           .status(201)
           .json({ mensagem: "Aluno cadastrado com sucesso." });
       } else {
-        return res.status(400).json({ mensagem: "Erro ao cadastrar aluno." });
-      }
-    } catch (error) {
-      console.error("Erro ao cadastrar aluno:", error);
-      return res
-        .status(500)
-        .json({ mensagem: "Não foi possível inserir o aluno." });
-    }
-  }
-
-  // Buscar aluno por matrícula
-  static async aluno(req: Request, res: Response): Promise<Response> {
-    try {
-      const matricula = req.params.matricula as string;
-
-      if (matricula || matricula.length < 3) {
-        return res.status(400).json({ mensagem: "Matrícula inválida." });
-      }
-
-      const respostaModelo = await Aluno.listarAluno(matricula);
-
-      if (respostaModelo == null) {
         return res
-          .status(404)
-          .json({ mensagem: "Nenhum aluno encontrado com essa matrícula." });
+          .status(400)
+          .json({ mensagem: "Erro ao cadastrar Aluno." });
       }
-
-      return res.status(200).json(respostaModelo);
     } catch (error) {
-      console.error("Erro ao recuperar aluno:", error);
+      console.error(`Erro no modelo. ${error}`);
       return res
         .status(500)
-        .json({ mensagem: "Não foi possível recuperar o aluno." });
+        .json({ mensagem: "Não foi possivel inserir o Aluno." });
     }
   }
+  static async aluno(req: Request, res: Response): Promise<Response> {
+        try { 
+            const idAluno: number = parseInt(req.params.idLivro as string);
+
+            if (isNaN(idAluno) || idAluno <= 0) {
+                return res.status(400).json({ mensagem: "ID do Aluno inválido." });
+            }
+
+            const aluno = Aluno.listarAluno(idAluno);
+
+            return res.status(200).json(aluno);
+
+        } catch (error) {
+            console.error(`Erro ao acessar o Aluno. ${error}`);
+            return res.status(500).json({ mensagem: "Não foi possível recuperar o Aluno." });
+        }
+    }
 }
 
 export default AlunoController;

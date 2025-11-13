@@ -1,119 +1,165 @@
+import type { LivroDTO } from "../interface/LivroDTO.js";
+import DataBaseModel from "./DatabaseModel.js";
+
+const database = new DataBaseModel().pool;
+
 class Livro {
-  private id_livro: number;
-  private titulo: string;
-  private autor: string;
-  private editora: string;
-  private ano_publicacao: number;
-  private isbn: string;
-  private quant_total: number;
-  private quant_disponivel: number;
-  private valor_aquisicao: number;
-  private status_livro_emprestado: string;
 
-  constructor(
-    _id_livro: number,
-    _titulo: string,
-    _autor: string,
-    _editora: string,
-    _ano_publicacao: number,
-    _isbn: string,
-    _quant_total: number,
-    _quant_disponivel: number,
-    _valor_aquisicao: number,
-    _status_livro_emprestado: string
-  ) {
-    this.id_livro = _id_livro;
-    this.titulo = _titulo;
-    this.autor = _autor;
-    this.editora = _editora;
-    this.ano_publicacao = _ano_publicacao;
-    this.isbn = _isbn;
-    this.quant_total = _quant_total;
-    this.quant_disponivel = _quant_disponivel;
-    this.valor_aquisicao = _valor_aquisicao;
-    this.status_livro_emprestado = _status_livro_emprestado;
-  }
+    private idLivro: number = 0;
+    private editora: string;
+    private anoPublicacao: string;
+    private principioAtivo: number;
+    private isbn: string;
+    private quantidadeTotal: number
+    /**
+     * Construtor da classe Livro
+     * @param _editora Editora do livro
+     * @param _anoPublicacao Ano de publicação
+     * @param _principioAtivo Código ou valor identificador
+     * @param _isbn Código ISBN
+     * @param _quantidadeTotal Quantidade total de exemplares
+     */
+    constructor(
+        _editora: string,
+        _anoPublicacao: string,
+        _principioAtivo: number,
+        _isbn: string,
+        _quantidadeTotal: number
+    ) {
+        this.editora = _editora;
+        this.anoPublicacao = _anoPublicacao;
+        this.principioAtivo = _principioAtivo;
+        this.isbn = _isbn;
+        this.quantidadeTotal = _quantidadeTotal
+    }
 
-  public getIdLivro(): number {
-    return this.id_livro;
-  }
+    public getIdLivro(): number {
+        return this.idLivro;
+    }
 
-  public getTitulo(): string {
-    return this.titulo;
-  }
+    public setIdLivro(idLivro: number): void {
+        this.idLivro = idLivro;
+    }
 
-  public getAutor(): string {
-    return this.autor;
-  }
+    public getEditora(): string {
+        return this.editora;
+    }
 
-  public getEditora(): string {
-    return this.editora;
-  }
+    public setEditora(editora: string): void {
+        this.editora = editora;
+    }
 
-  public getAnoPublicacao(): number {
-    return this.ano_publicacao;
-  }
+    public getAnoPublicacao(): string {
+        return this.anoPublicacao;
+    }
 
-  public getIsbn(): string {
-    return this.isbn;
-  }
+    public setAnoPublicacao(anoPublicacao: string): void {
+        this.anoPublicacao = anoPublicacao;
+    }
 
-  public getQuantTotal(): number {
-    return this.quant_total;
-  }
+    public getPrincipioAtivo(): number {
+        return this.principioAtivo;
+    }
 
-  public getQuantDisponivel(): number {
-    return this.quant_disponivel;
-  }
+    public setPrincipioAtivo(principioAtivo: number): void {
+        this.principioAtivo = principioAtivo;
+    }
 
-  public getValorAquisicao(): number {
-    return this.valor_aquisicao;
-  }
+    public getIsbn(): string {
+        return this.isbn;
+    }
 
-  public getStatusLivroEmprestado(): string {
-    return this.status_livro_emprestado;
-  }
+    public setIsbn(isbn: string): void {
+        this.isbn = isbn;
+    }
 
+    public getQuantidadeTotal(): number {
+        return this.quantidadeTotal;
+    }
 
-  public setIdLivro(id_livro: number): void {
-    this.id_livro = id_livro;
-  }
+    public setQuantidadeTotal(quantidadeTotal: number): void {
+        this.quantidadeTotal = quantidadeTotal;
+    }
 
-  public setTitulo(titulo: string): void {
-    this.titulo = titulo;
-  }
+    static async listarLivros(): Promise<Array<Livro> | null> {
+        try {
+            const listaDeLivros: Array<Livro> = [];
+            const querySelectLivros = `SELECT * FROM Livros;`;
+            const respostaBD = await database.query(querySelectLivros);
 
-  public setAutor(autor: string): void {
-    this.autor = autor;
-  }
+            respostaBD.rows.forEach((respostaBD : any) => {
+                const novoLivro: Livro = new Livro(
+                    respostaBD.editora,
+                    respostaBD.ano_publicacao,
+                    respostaBD.principio_ativo,
+                    respostaBD.isbn,
+                    respostaBD.quantidade_total
+                );
 
-  public setEditora(editora: string): void {
-    this.editora = editora;
-  }
+                novoLivro.setIdLivro(respostaBD.id_livro);
+                listaDeLivros.push(novoLivro);
+            });
 
-  public setAnoPublicacao(ano_publicacao: number): void {
-    this.ano_publicacao = ano_publicacao;
-  }
+            return listaDeLivros;
+        } catch (error) {
+            console.error(`Erro na consulta ao banco de dados. ${error}`);
+            return null;
+        }
+    }
 
-  public setIsbn(isbn: string): void {
-    this.isbn = isbn;
-  }
+    static async cadastrarLivro(livro: LivroDTO): Promise<boolean> {
+        try {
+            const queryInsertLivro = `
+                INSERT INTO Livros (editora, ano_publicacao, isbn, quant_total, principio_ativo)
+                VALUES ($1, $2, $3, $4, $5)
+                RETURNING id_livro;
+            `;
 
-  public setQuantTotal(quant_total: number): void {
-    this.quant_total = quant_total;
-  }
+            const respostaBD = await database.query(queryInsertLivro, [
+                livro.editora,
+                livro.ano_publicacao,
+                livro.isbn,
+                livro.quant_total,
+                livro.principio_ativo
+            ]);
 
-  public setQuantDisponivel(quant_disponivel: number): void {
-    this.quant_disponivel = quant_disponivel;
-  }
+            if (respostaBD.rows.length > 0) {
+                console.info(`Livro cadastrado com sucesso. ID: ${respostaBD.rows[0].id_livro}`);
+                return true;
+            }
 
-  public setValorAquisicao(valor_aquisicao: number): void {
-    this.valor_aquisicao = valor_aquisicao;
-  }
+            return false;
+        } catch (error) {
+            console.error(`Erro ao cadastrar Livro no banco de dados. ${error}`);
+            return false;
+        }
+    }
 
-  public setStatusLivroEmprestado(status_livro_emprestado: string): void {
-    this.status_livro_emprestado = status_livro_emprestado;
-  }
+    static async listarLivro(idLivro: number): Promise<Livro | null> {
+        try {
+            const querySelectLivro = `SELECT * FROM Livros WHERE id_livro = $1;`;
+            const respostaBD = await database.query(querySelectLivro, [idLivro]);
+
+            if (respostaBD.rowCount !== 0) {
+                const livroBD = respostaBD.rows[0];
+                const livro: Livro = new Livro(
+                    livroBD.editora,
+                    livroBD.ano_publicacao,
+                    livroBD.principio_ativo,
+                    livroBD.isbn,
+                    livroBD.quant_total
+                );
+                livro.setIdLivro(livroBD.id_livro);
+
+                return livro;
+            }
+
+            return null;
+        } catch (error) {
+            console.error(`Erro ao buscar Livro no banco de dados. ${error}`);
+            return null;
+        }
+    }
 }
 
 export default Livro;
