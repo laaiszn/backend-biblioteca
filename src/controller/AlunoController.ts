@@ -12,9 +12,9 @@ class AlunoController extends Aluno {
    */
   static async todos(req: Request, res: Response): Promise<Response> {
     try {
-      const listarAluno: Array<Aluno> | null = await this.listarAlunos();
+      const listaAlunos: Array<Aluno> | null = await Aluno.listarAlunos();
 
-      return res.status(200).json(listarAluno);
+      return res.status(200).json(listaAlunos);
     } catch (error) {
       console.error(`Erro ao consultar modelo. ${error}`);
 
@@ -45,18 +45,14 @@ class AlunoController extends Aluno {
   static async novo(req: Request, res: Response): Promise<Response> {
     try {
       const dadosRecebidosAluno = req.body;
-      const respostaModelo = await Aluno.cadastrarAluno(
-        dadosRecebidosAluno
-      );
+      const respostaModelo = await Aluno.cadastrarAluno(dadosRecebidosAluno);
 
       if (respostaModelo) {
         return res
           .status(201)
           .json({ mensagem: "Aluno cadastrado com sucesso." });
       } else {
-        return res
-          .status(400)
-          .json({ mensagem: "Erro ao cadastrar Aluno." });
+        return res.status(400).json({ mensagem: "Erro ao cadastrar Aluno." });
       }
     } catch (error) {
       console.error(`Erro no modelo. ${error}`);
@@ -66,22 +62,23 @@ class AlunoController extends Aluno {
     }
   }
   static async aluno(req: Request, res: Response): Promise<Response> {
-        try { 
-            const idAluno: number = parseInt(req.params.idLivro as string);
+    try {
+      const idAluno: number = parseInt(req.params.idLivro as string);
 
-            if (isNaN(idAluno) || idAluno <= 0) {
-                return res.status(400).json({ mensagem: "ID do Aluno inválido." });
-            }
+      if (isNaN(idAluno) || idAluno <= 0) {
+        return res.status(400).json({ mensagem: "ID do Aluno inválido." });
+      }
 
-            const aluno = Aluno.listarAluno(idAluno);
+      const aluno = Aluno.listarAluno(idAluno);
 
-            return res.status(200).json(aluno);
-
-        } catch (error) {
-            console.error(`Erro ao acessar o Aluno. ${error}`);
-            return res.status(500).json({ mensagem: "Não foi possível recuperar o Aluno." });
-        }
+      return res.status(200).json(aluno);
+    } catch (error) {
+      console.error(`Erro ao acessar o Aluno. ${error}`);
+      return res
+        .status(500)
+        .json({ mensagem: "Não foi possível recuperar o Aluno." });
     }
+  }
 }
 
 export default AlunoController;

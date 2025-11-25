@@ -8,7 +8,7 @@ class Aluno {
   private nome: string;
   private sobrenome: string;
   private ra: number;
-  private data_nascimento: Date;
+  private dataNascimento: Date;
   private celular: string;
   private email: string;
   private endereco: string;
@@ -25,7 +25,7 @@ class Aluno {
     _nome: string,
     _sobrenome: string,
     _ra: number,
-    _data_nascimento: Date,
+    _dataNascimento: Date,
     _celular: string,
     _email: string,
     _endereco: string
@@ -33,7 +33,7 @@ class Aluno {
     this.nome = _nome;
     this.sobrenome = _sobrenome;
     this.ra = _ra;
-    this.data_nascimento = _data_nascimento;
+    this.dataNascimento = _dataNascimento;
     this.celular = _celular;
     this.email = _email;
     this.endereco = _endereco;
@@ -71,12 +71,12 @@ class Aluno {
     return (this.ra = ra);
   }
 
-  public getdata_nascimento(): Date {
-    return this.data_nascimento;
+  public getdataNascimento(): Date {
+    return this.dataNascimento;
   }
 
-  public setdataNascimento(data_nascimento: Date): void {
-    this.data_nascimento = data_nascimento;
+  public setdataNascimento(dataNascimento: Date): void {
+    this.dataNascimento = dataNascimento;
   }
 
   public getemail(): string {
@@ -107,7 +107,7 @@ class Aluno {
     try {
       let listaDeAlunos: Array<Aluno> = [];
 
-      const querySelectAlunos = `SELECT * FROM Alunos;`;
+      const querySelectAlunos = `SELECT * FROM Aluno;`;
 
       const respostaBD = await database.query(querySelectAlunos);
 
@@ -135,20 +135,28 @@ class Aluno {
     }
   }
 
-  static async cadastrarAluno(Aluno: AlunoDTO): Promise<boolean> {
+  static async cadastrarAluno(aluno: AlunoDTO): Promise<boolean> {
+    /*{
+  "nome": "Ricardo",
+  "sobrenome": "Cardoso",
+  "data_nascimento": "1995-03-14",
+  "endereco": "Rua General Osório, 165",
+  "email": "ricardo_cardoso@usp.br",
+  "celular": "67986786153"
+  */
     try {
-      const queryInsertAluno = `INSERT INTO Alunos (nome, cpf, telefone)
+      const queryInsertAluno = `INSERT INTO Aluno (nome, sobrenome, data_nascimento, endereco, email, celular)
                                 VALUES
-                                ($1, $2, $3)
+                                ($1, $2, $3, $4, $5, $6)
                                 RETURNING id_Aluno;`;
 
       const respostaBD = await database.query(queryInsertAluno, [
-        Aluno.sobrenome.toUpperCase(),
-        Aluno.ra,
-        Aluno.celular,
-        Aluno.data_nascimento,
-        Aluno.email,
-        Aluno.endereco,
+        aluno.nome.toUpperCase(),
+        aluno.sobrenome.toUpperCase(),
+        aluno.dataNascimento,
+        aluno.endereco,
+        aluno.email,
+        aluno.celular,
       ]);
 
       if (respostaBD.rows.length > 0) {

@@ -1,82 +1,82 @@
 import DatabaseModel from "./DatabaseModel.js";
+import type { EmprestimoDTO } from "../interface/EmprestimoDTO.js";
 
 const database = new DatabaseModel().pool;
 
 class Emprestimo {
-  private id_emprestimo?: number;
-  private id_aluno: number;
-  private id_livro: number;
-  private data_emprestimo: Date;
-  private data_evolucao: Date;
-  private status_emprestimo: string;
+  private idEmprestimo?: number;
+  private idAluno: number;
+  private idLivro: number;
+  private dataEmprestimo: Date;
+  private dataDevolucao: Date;
+  private statusEmprestimo: string;
 
   constructor(
-    _id_aluno: number,
-    _id_livro: number,
-    _data_emprestimo: Date,
-    _data_evolucao: Date,
-    _status_emprestimo: string
+    _idAluno: number,
+    _idLivro: number,
+    _dataEmprestimo: Date,
+    _dataDevolucao: Date,
+    _statusEmprestimo: string
   ) {
-    this.id_aluno = _id_aluno;
-    this.id_livro = _id_livro;
-    this.data_emprestimo = _data_emprestimo;
-    this.data_evolucao = _data_evolucao;
-    this.status_emprestimo = _status_emprestimo;
+    this.idAluno = _idAluno;
+    this.idLivro = _idLivro;
+    this.dataEmprestimo = _dataEmprestimo;
+    this.dataDevolucao = _dataDevolucao;
+    this.statusEmprestimo = _statusEmprestimo;
   }
 
   public getIdAluno(): number {
-    return this.id_aluno;
+    return this.idAluno;
   }
 
-  public setIdAluno(id_aluno: number): void {
-    this.id_aluno = id_aluno;
+  public setIdAluno(idAluno: number): void {
+    this.idAluno = idAluno;
   }
 
   public getIdLivro(): number {
-    return this.id_livro;
+    return this.idLivro;
   }
 
-  public setIdLivro(id_livro: number): void {
-    this.id_livro = id_livro;
+  public setIdLivro(idLivro: number): void {
+    this.idLivro = idLivro;
   }
 
   public getDataEmprestimo(): Date {
-    return this.data_emprestimo;
+    return this.dataEmprestimo;
   }
 
-  public setDataEmprestimo(data_emprestimo: Date): void {
-    this.data_emprestimo = data_emprestimo;
+  public setDataEmprestimo(dataEmprestimo: Date): void {
+    this.dataEmprestimo = dataEmprestimo;
   }
 
   public getDataEvolucao(): Date {
-    return this.data_evolucao;
+    return this.dataDevolucao;
   }
 
-  public setDataEvolucao(data_evolucao: Date): void {
-    this.data_evolucao = data_evolucao;
+  public setDataEvolucao(dataDevolucao: Date): void {
+    this.dataDevolucao = dataDevolucao;
   }
 
   public getStatusEmprestimo(): string {
-    return this.status_emprestimo;
+    return this.statusEmprestimo;
   }
-  public setStatusEmprestimo(status_emprestimo: string): void {
-    this.status_emprestimo = status_emprestimo;
+  public setStatusEmprestimo(statusEmprestimo: string): void {
+    this.statusEmprestimo = statusEmprestimo;
   }
 
   public getIdEmprestimo(): number | undefined {
-    return this.id_emprestimo;
+    return this.idEmprestimo;
   }
 
-  public setIdEmprestimo(id_emprestimo: number): void {
-    this.id_emprestimo = id_emprestimo;
+  public setIdEmprestimo(idEmprestimo: number): void {
+    this.idEmprestimo = idEmprestimo;
   }
 
-    static async listarEmprestimos(): Promise<Array<Emprestimo> | null> {
+  static async listarEmprestimos(): Promise<Array<Emprestimo> | null> {
     try {
-      
       let listaDeEmprestimos: Array<Emprestimo> = [];
 
-      const querySelectEmprestimo = `SELECT * FROM emprestimo;`;
+      const querySelectEmprestimo = `SELECT * FROM Emprestimo;`;
 
       const respostaBD = await database.query(querySelectEmprestimo);
 
@@ -85,7 +85,7 @@ class Emprestimo {
           emprestimoBD.id_aluno,
           emprestimoBD.id_livro,
           new Date(emprestimoBD.data_emprestimo),
-          new Date(emprestimoBD.data_evolucao),
+          new Date(emprestimoBD.data_devolucao),
           emprestimoBD.status_emprestimo
         );
 
@@ -94,17 +94,39 @@ class Emprestimo {
         listaDeEmprestimos.push(novoEmprestimo);
       });
 
-  
       return listaDeEmprestimos;
     } catch (error) {
-     
       console.error(`Erro na consulta ao banco de dados. ${error}`);
-
 
       return null;
     }
   }
+  static async cadastrarEmprestimo(
+    emprestimo: EmprestimoDTO
+  ): Promise<boolean> {
+    try {
+      const queryInsertEmprestimo = `INSERT INTO Emprestimo 
+      (id_aluno, id_livro, data_emprestimo, data_devolucao, status_emprestimo)
+      VALUES 
+      ($1, $2, $3, $4, $5)
+      RETURNING id_emprestimo;`;
+      const respostaBD = await database.query(queryInsertEmprestimo, [
+        emprestimo.dataEmprestimo,
+        emprestimo.dataDevolucao,
+        emprestimo.statusEmprestimo,
+      ]);
+      if (respostaBD.rows.length > 0) {
+        console.info(
+          `Emprestimo cadastrado com sucesso. ID: ${respostaBD.rows[0].id_emprestimo}`
+        );
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error(`Erro na consulta ao banco de dados. ${error}`);
+      return false;
+    }
   }
-
+}
 
 export default Emprestimo;

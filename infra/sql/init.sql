@@ -1,5 +1,6 @@
 
 
+
 CREATE SEQUENCE seq_ra START 1;
 
 CREATE TABLE Aluno (
