@@ -23,25 +23,6 @@ class AlunoController extends Aluno {
         .json({ mensagem: "Não foi possivel acessar a lista de Alunos." });
     }
   }
-
-  static async Aluno(req: Request, res: Response): Promise<Response> {
-    try {
-      const idAluno: number = parseInt(req.params.idAluno as string);
-
-      if (isNaN(idAluno) || idAluno <= 0) {
-        return res.status(400).json({ mensagem: "ID do Aluno inválido." });
-      }
-
-      const respostaModelo: Aluno | null = await Aluno.listarAluno(idAluno);
-
-      return res.status(200).json(respostaModelo);
-    } catch (error) {
-      console.error(`Erro ao acesso o modelo. ${error}`);
-      return res
-        .status(500)
-        .json({ mensagem: "Não foi possivel recuperar o Alunos." });
-    }
-  }
   static async novo(req: Request, res: Response): Promise<Response> {
     try {
       const dadosRecebidosAluno = req.body;
